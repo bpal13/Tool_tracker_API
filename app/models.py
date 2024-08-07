@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, TIMESTAMP, text, ForeignKey, DateTime, Numeric
-from sqlalchemy.orm import relationship
-from .database import Base
+from sqlalchemy.orm import relationship, Session
+from .database import Base, get_db
 
 
 class Users(Base):
@@ -15,17 +15,15 @@ class Users(Base):
     registered = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
     last_login = Column(TIMESTAMP(timezone=True))
     still_employed = Column(Boolean, server_default="TRUE")
-    #user_role = Column(Integer, ForeignKey("roles.id"), nullable=False)
+    user_role = Column(Integer, ForeignKey("roles.id"))
 
-    #roles = relationship("Roles")
+    roles = relationship("Roles")
 
-    def validate_employee_id(self, employee_id):
+    def validate_employee_id(self, employee_id: int):
         pass
 
-
-    def validate_username(self, username):
+    def validate_username(self, username: str):
         pass
-
 
     def generate_password(self, password):
         pass
@@ -50,6 +48,7 @@ class Tools(Base):
     tool_accuracy = Column(String(50), nullable=False)
     tool_range = Column(String(50), nullable=False)
     max_deviation = Column(String(50), nullable=False)
+    visibility = Column(Boolean, server_default="TRUE") # DELETE LATER
     valid_until = Column(DateTime)
     notes = Column(String(255))
 

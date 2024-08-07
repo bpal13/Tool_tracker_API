@@ -46,8 +46,19 @@ def get_tool(id: int, db: Session = Depends(get_db), current_user: int = Depends
 # Add a new tool to the database
 @router.post("/new-tool", response_model=schemas.ToolOut, status_code=status.HTTP_201_CREATED)
 def create_tool(tool: schemas.ToolCreate, db: Session = Depends(get_db), current_user: int = Depends(get_current_user)):
-    new_tool = models.Tools(issued_by = current_user.id, **tool.model_dump())
+    
+    # Check for an existing record
+    check_tool_id = db.query(models.Tools).filter(models.Tools.tool_id == tool.tool_id).first()
+    if check_tool_id:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Tool ID already exist")
+    
+    check_tool_serial = db.query(models.Tools).filter(models.Tools.tool_serial == tool.tool_serial).first()
+    if check_tool_serial:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Tool Serial already exist")
+ 
 
+    # Add tool to DB
+    new_tool = models.Tools(issued_by = current_user.id, **tool.model_dump())
     db.add(new_tool)
     db.commit()
 

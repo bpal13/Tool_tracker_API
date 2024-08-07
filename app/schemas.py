@@ -17,13 +17,21 @@ class TokenData(BaseModel):
 
 
 # User Schemas
+class Role(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
 class UserCreate(BaseModel):
     email: EmailStr
     username: str
     fullname: str
     password: str
     employee_id: int
-    #user_role: int
+    user_role: Optional[int] = None
 
 
 class UserOut(BaseModel):
@@ -32,6 +40,7 @@ class UserOut(BaseModel):
     username: str
     email: EmailStr
     registered: datetime
+    roles: Role
 
     class Config:
         orm_mode = True
